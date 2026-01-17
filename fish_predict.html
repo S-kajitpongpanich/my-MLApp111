@@ -3,177 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบส่องปลาอัจฉริยะ</title>
+    <title>ระบบส่องปลาหน้าคุ้น</title>
     <style>
-        body, html {
-            margin: 0; padding: 0; height: 100%;
-            font-family: 'Kanit', sans-serif;
-            background: #fdf2f8; /* สีชมพูอ่อนๆ ดูใจดี */
+        :root {
+            --primary: #e11d48;
+            --bg: #fff1f2;
+        }
+        
+        body {
+            margin: 0; font-family: 'Kanit', sans-serif;
+            background-color: var(--bg);
+            color: #333;
         }
 
         nav {
-            position: fixed; top: 0; width: 100%;
-            background: #db2777; color: white;
-            display: flex; justify-content: center; padding: 15px 0;
-            z-index: 1000;
+            background: var(--primary);
+            padding: 1rem;
+            display: flex; justify-content: center;
+            position: fixed; top: 0; width: 100%; z-index: 100;
         }
 
-        nav a { color: white; text-decoration: none; margin: 0 20px; cursor: pointer; }
+        nav a { color: white; text-decoration: none; margin: 0 15px; font-weight: bold; cursor: pointer; }
 
         section {
-            display: none; min-height: 100vh; width: 100%;
-            flex-direction: column; justify-content: center; 
-            align-items: center; text-align: center; padding: 80px 20px 20px; box-sizing: border-box;
+            height: 100vh; display: none;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px;
         }
 
         section.active { display: flex; }
 
-        .btn-upload {
-            display: inline-block; padding: 15px 40px;
-            cursor: pointer; background: #be185d; color: white;
-            border-radius: 12px; font-size: 1.3rem; border: none;
+        /* การตกแต่งปุ่มเลือกภาพ */
+        .upload-btn {
+            background: var(--primary);
+            color: white; padding: 15px 30px;
+            border-radius: 50px; cursor: pointer;
+            font-size: 1.5rem; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(225, 29, 72, 0.4);
         }
 
-        /* ส่วนแสดงรูปภาพที่อัปโหลด */
-        #display-image {
-            margin-top: 20px;
-            max-width: 300px;
-            border-radius: 15px;
-            border: 5px solid #fff;
-            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
-            display: none; /* ซ่อนไว้จนกว่าจะมีการเลือกรูป */
+        .upload-btn:hover { transform: scale(1.1) rotate(-2deg); background: #be123c; }
+
+        /* รูปภาพที่อัปโหลด */
+        #fish-photo {
+            max-width: 250px; border: 8px solid white;
+            border-radius: 20px; margin-top: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            display: none;
         }
 
-        #result-box {
-            margin-top: 20px; padding: 25px;
-            border-radius: 20px; background: white;
-            width: 90%; max-width: 400px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        /* กล่องคำด่า */
+        #result-card {
+            margin-top: 20px; padding: 20px;
+            background: white; border-radius: 15px;
+            width: 80%; max-width: 400px;
+            display: none; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        #fish-name { font-size: 2.2rem; font-weight: bold; color: #9d174d; }
-        #joke-text { font-size: 1.2rem; color: #475569; margin-top: 15px; line-height: 1.5; }
-        
-        h1 { color: #831843; }
+        @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+
+        #fish-name { font-size: 2.5rem; color: var(--primary); font-weight: 900; }
+        #insult-text { font-size: 1.3rem; margin-top: 10px; color: #555; font-style: italic; }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;900&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <nav>
-        <a onclick="showPage('home')">หน้าแรก</a>
-        <a onclick="showPage('check')">ส่องปลา</a>
-        <a onclick="showPage('about')">ผู้จัดทำ</a>
-    </nav>
+<nav>
+    <a onclick="showPage('home')">หน้าหลัก</a>
+    <a onclick="showPage('check')">ส่องปลา/ส่องเพื่อน</a>
+    <a onclick="showPage('about')">คนทำเว็บ</a>
+</nav>
 
-    <section id="home" class="active">
-        <h1>🐟 ระบบส่องปลา 5G</h1>
-        <p>แม่นยำกว่าหมอดู ก็ AI ตัวนี้นี่แหละ!</p>
-    </section>
+<section id="home" class="active">
+    <h1>ยินดีต้อนรับสู่ระบบ <br><span style="color:var(--primary)">สแกนปลาหน้าเหมือนเพื่อน</span></h1>
+    <p>เอาไว้เช็คว่ารูปที่ถ่ายมา คือปลาหรือหน้าเพื่อนคุณกันแน่!</p>
+</section>
 
-    <section id="check">
-        <h1>เอาล่ะ ปลาอะไรเอ่ย?</h1>
-        
-        <img id="display-image" src="" alt="รูปปลาของคุณ">
+<section id="check">
+    <h2 id="status-title">เอารูปปลา (หรือรูปเพื่อน) มาดูดิ๊!</h2>
+    
+    <img id="fish-photo" src="">
 
-        <div id="result-box" style="display: none;">
-            <div id="fish-name">...</div>
-            <div id="joke-text">...</div>
-        </div>
+    <div id="result-card">
+        <div id="fish-name"></div>
+        <div id="insult-text"></div>
+    </div>
 
-        <div style="margin-top: 20px;">
-            <label for="image-upload" class="btn-upload">เลือกภาพ</label>
-            <input type="file" id="image-upload" accept="image/*" onchange="processImage(event)" style="display: none;">
-        </div>
-    </section>
+    <div style="margin-top: 30px;">
+        <label for="file-in" class="upload-btn">เลือกภาพ</label>
+        <input type="file" id="file-in" accept="image/*" style="display:none" onchange="startScan(event)">
+    </div>
+</section>
 
-    <section id="about">
-        <h1>เกี่ยวกับเรา</h1>
-        <p>สร้างโดยคนไทย เพื่อปลาไทย โดยใช้ปัญญาประดิษฐ์</p>
-    </section>
+<section id="about">
+    <h2>เกี่ยวกับผู้จัดทำ</h2>
+    <p>สร้างมาเพื่อความบันเทิงในวงเหล้าและหมู่เพื่อนฝูงโดยเฉพาะ</p>
+</section>
 
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
 
-    <script>
-        const URL = "https://teachablemachine.withgoogle.com/models/kjePmuygi/";
-        let model;
+<script>
+    const URL = "https://teachablemachine.withgoogle.com/models/kjePmuygi/";
+    let model;
 
-        const jokes = {
-            "ปลานิล": [
-                "ควย",
-                "ควยยยยยยยยยยยยยยยยยยยยยย",
-                "อย่าสบตาน้อง น้องเป็นปลานิลขี้อาย",
-                "ปลานิลตัวนี้ดูมีฐานะนะ ดูสิ...เกล็ดเป็นเงินเป็นทอง (ในฝัน)"
-            ],
-            "ปลาหมอ": [
-                "ปลาหมอมาแล้ว! มีอาการยังไงบอกหมอนะจ๊ะ",
-                "ตัวเล็กแต่ใจใหญ่ นี่แหละปลาหมอของแท้",
-                "เห็นเงียบๆ ปลาหมอตัวนี้ฟาดเรียบนะครับ",
-                "อย่าเอาผมไปทำแกงส้มเลย ผมยังอยากอยู่ดูโลกต่อ"
-            ],
-            "ไม่รู้": [
-                "ปลาลึกลับ! หรือจะเป็นสายพันธุ์ใหม่จากดาวอังคาร",
-                "AI มึนตึ้บ! นี่มันปลาหรือก้อนหินกันแน่",
-                "เอาใหม่ๆ ขอภาพชัดๆ แบบเห็นหน้าเห็นตาหน่อย"
+    // คลังคำด่าแบบกวนๆ
+    const roastData = {
+        "Class 1": {
+            name: "ปลานิล",
+            quotes: [
+                "ปลานิลตัวนี้นิ่งมาก นิ่งเหมือนไม่มีสมองเลย",
+                "วาสนาปลานิล ได้เกิดมาหน้าคล้ายเพื่อนมึงคนนึง",
+                "อย่าทำหน้าเหมือนปลานิลสิ เห็นแล้วอยากเอาไปทอด",
+                "ปลานิลตัวนี้ดูมีทรง... ทรงอย่างแบด แซดอย่างมึง!"
             ]
-        };
-
-        async function init() {
-            model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+        },
+        "Class 2": {
+            name: "ปลาหมอ",
+            quotes: [
+                "ปลาหมอมาแล้วจ้า! เก่งแต่ปากแบบนี้ ไม่ต้องสืบว่าเพื่อนใคร",
+                "หน้าตาปลาหมอตัวนี้ ดูแล้วน่าจะเรียนไม่จบนะ",
+                "ปลาหมอตายเพราะปาก แต่มึงจะตายเพราะถ่ายรูปนี้",
+                "ไม่ต้องทำมาเป็นมองแรง ไอ้ปลาหมอปากเสีย!"
+            ]
+        },
+        "Unknown": {
+            name: "ตัวประหลาด",
+            quotes: [
+                "AI ยังงง! นี่มึงอัปโหลดรูปปลาหรือรูปขยะเนี่ย?",
+                "ตัวอะไรวะเนี่ย หน้าตาอุบาทว์จนระบบประมวลผลไม่ได้!",
+                "กูว่าไม่ใช่ปลาละ นี่มันสัตว์นรกมาเกิดชัดๆ"
+            ]
         }
+    };
 
-        function showPage(p) {
-            document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-            document.getElementById(p).classList.add('active');
-        }
+    async function loadModel() {
+        model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+    }
 
-        async function processImage(event) {
-            if (!model) await init();
-            const file = event.target.files[0];
-            if (!file) return;
+    function showPage(id) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
 
-            const reader = new FileReader();
-            const imgDisplay = document.getElementById("display-image");
+    async function startScan(event) {
+        if (!model) await loadModel();
+        const file = event.target.files[0];
+        if (!file) return;
 
-            reader.onload = function(e) {
-                // แสดงรูปที่ผู้ใช้เลือก
-                imgDisplay.src = e.target.result;
-                imgDisplay.style.display = "block";
+        const reader = new FileReader();
+        const photo = document.getElementById("fish-photo");
+        const card = document.getElementById("result-card");
+
+        reader.onload = function(e) {
+            photo.src = e.target.result;
+            photo.style.display = "block";
+            card.style.display = "none";
+            document.getElementById("status-title").innerText = "กำลังวิเคราะห์หน้าปลา...";
+
+            photo.onload = async function() {
+                const predict = await model.predict(photo);
+                const top = predict.reduce((a, b) => (a.probability > b.probability) ? a : b);
                 
-                imgDisplay.onload = async function() {
-                    const prediction = await model.predict(imgDisplay);
-                    let top = prediction.reduce((a, b) => (a.probability > b.probability) ? a : b);
+                let resultData = roastData[top.className] || roastData["Unknown"];
+                if (top.probability < 0.4) resultData = roastData["Unknown"];
 
-                    let name = "";
-                    let list = [];
+                const randomQuote = resultData.quotes[Math.floor(Math.random() * resultData.quotes.length)];
 
-                    // เปลี่ยนจาก Class 1/2 เป็นภาษาไทยล้วน
-                    if(top.className === "Class 1") { 
-                        name = "ปลานิล";
-                        list = jokes["ปลานิล"];
-                    } else if(top.className === "Class 2") {
-                        name = "ปลาหมอ";
-                        list = jokes["ปลาหมอ"];
-                    } else {
-                        name = "ตัวอะไรเนี่ย?";
-                        list = jokes["ไม่รู้"];
-                    }
-
-                    const joke = list[Math.floor(Math.random() * list.length)];
-
-                    document.getElementById("result-box").style.display = "block";
-                    document.getElementById("fish-name").innerText = name;
-                    document.getElementById("joke-text").innerText = "คำทำนาย: " + joke;
-                    
-                    // เลื่อนหน้าจอลงมาดูผลลัพธ์
-                    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-                };
+                document.getElementById("fish-name").innerText = resultData.name;
+                document.getElementById("insult-text").innerText = "คำด่าจาก AI: " + randomQuote;
+                card.style.display = "block";
+                document.getElementById("status-title").innerText = "วิเคราะห์เสร็จแล้วอีสัส!";
+                
+                // เสียงด่า (Option เสริม)
+                speak("ไอ้" + resultData.name + " " + randomQuote);
             };
-            reader.readAsDataURL(file);
-        }
+        };
+        reader.readAsDataURL(file);
+    }
 
-        init();
-    </script>
+    function speak(text) {
+        const msg = new SpeechSynthesisUtterance(text);
+        msg.lang = 'th-TH';
+        window.speechSynthesis.speak(msg);
+    }
+
+    loadModel();
+</script>
+
 </body>
 </html>
